@@ -1,6 +1,5 @@
-
 const startConver = () => {
-const dialogs = [
+  const dialogs = [
     ["avatar", "Hi! I'm the Fix It Dude"],
     [
       "mayor",
@@ -13,7 +12,6 @@ const dialogs = [
     ["mayor", "... okay, let's play !!"],
   ];
 
-
   let currentDialog = 0;
 
   const textbox = add([
@@ -23,8 +21,6 @@ const dialogs = [
     outline(2),
   ]);
 
- 
-
   const avatar = add([
     sprite("avatar"),
     scale(11),
@@ -32,18 +28,18 @@ const dialogs = [
     pos(center().sub(0, 100)),
   ]);
   const txt = add([
-    text("", { size: 32, width: width() - 230 , font: "sinko"}),
+    text("", { size: 32, width: width() - 230, font: "sinko" }),
     pos(textbox.pos),
     origin("center"),
   ]);
-   const instruction = add([
-  text("Hit space to continue", {size:25}),
-  pos(width()/2.6 ,height()-100),
-  color(233, 196, 106),
+  const instruction = add([
+    text("Hit space to continue", { size: 25 }),
+    pos(width() / 2.6, height() - 100),
+    color(233, 196, 106),
   ]);
   onKeyPress("space", () => {
     currentDialog = (currentDialog + 1) % dialogs.length;
-    if(currentDialog == dialogs.length-1) {
+    if (currentDialog == dialogs.length - 1) {
       go("startButton");
     }
     updateDialog();
@@ -55,6 +51,6 @@ const dialogs = [
     txt.text = dialog;
   };
   updateDialog();
-}
+};
 
 module.exports = startConver;

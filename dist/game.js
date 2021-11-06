@@ -74,16 +74,18 @@
             scale(1),
             origin("center")
           ]);
+          btnHover(btn);
           btn.onClick(() => debug.log("Start game"));
         }, "startButton");
         const quitButton = /* @__PURE__ */ __name((txt2) => {
           const btn = add([
             text(txt2, { size: 48 }),
-            pos(center().x, height() - 380),
+            pos(center().x, height() - 350),
             area({ cursor: "pointer" }),
             scale(1),
             origin("center")
           ]);
+          btnHover(btn);
           btn.onClick(() => debug.log("Quit game"));
         }, "quitButton");
         const textbox = add([
@@ -92,14 +94,38 @@
           pos(center().x, height() - 400),
           outline(2)
         ]);
+        const worker = add([
+          sprite("worker"),
+          scale(5),
+          origin("center"),
+          pos(center().sub(-40, 250))
+        ]);
+        const mayor = add([
+          sprite("mayor"),
+          scale(5),
+          origin("center"),
+          pos(center().sub(70, 250))
+        ]);
         const txt = add([
-          text("", { size: 32, width: width() - 230, font: "sinko" }),
-          pos(textbox.pos),
+          text("FIX IT DUDE", { size: 64, width: width() - 230, font: "sinko" }),
+          color(254, 200, 154),
+          pos(center().x, height() - 170),
           origin("center")
         ]);
         startButton("Start");
         quitButton("Quit");
       }, "startMenu");
+      var btnHover = /* @__PURE__ */ __name((btn) => {
+        btn.onUpdate(() => {
+          if (btn.isHovering()) {
+            btn.color = rgb(254, 197, 187);
+            btn.scale = vec2(1.2);
+          } else {
+            btn.color = rgb();
+            btn.scale = vec2(1);
+          }
+        });
+      }, "btnHover");
       module.exports = startMenu2;
     }
   });

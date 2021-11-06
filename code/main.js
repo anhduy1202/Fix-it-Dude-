@@ -9,14 +9,15 @@ loadSprite("avatar", "sprites/dude-avatar.png");
 loadSprite("mayor", "sprites/mayor.png");
 loadSprite("worker", "sprites/dude-worker.png");
 scene("start", () => {
-startConver();
- 
+  startConver();
 });
 
 go("start");
 
-
 scene("startButton", () => {
   startMenu();
+});
 
+scene("gameplay", () => {
+  
 })
