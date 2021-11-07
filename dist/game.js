@@ -134,12 +134,15 @@
   var require_gameplay = __commonJS({
     "code/gameplay.js"(exports, module) {
       var gamePlay2 = /* @__PURE__ */ __name(() => {
-        const SPEED = 200;
+        const SPEED = 300;
         const player = add([
           scale(3.5),
           pos(width() * 0.5, height() * 0.5),
           sprite("fixguy", { anims: "down" })
         ]);
+        playerMovement(player, SPEED);
+      }, "gamePlay");
+      var playerMovement = /* @__PURE__ */ __name((player, SPEED) => {
         player.action(() => {
           const left = keyIsDown("left");
           const right = keyIsDown("right");
@@ -168,7 +171,7 @@
             player.move(0, SPEED);
           }
         });
-      }, "gamePlay");
+      }, "playerMovement");
       module.exports = gamePlay2;
     }
   });

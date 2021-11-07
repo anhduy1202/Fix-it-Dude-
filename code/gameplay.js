@@ -9,11 +9,10 @@ const gamePlay = () => {
     ]);
     playerMovement(player, SPEED);
 
-  
     
 }
 
-const playerMovement = (player,SPEED){
+const playerMovement = (player,SPEED) => {
   player.action(() => {
       //check for input
       const left = keyIsDown("left");
@@ -42,7 +41,7 @@ const playerMovement = (player,SPEED){
         }
         player.move(0,-SPEED);
       }
-      
+
        else if(down){
         if (curAnim !== "down") {
            player.play("down");
@@ -52,7 +51,7 @@ const playerMovement = (player,SPEED){
       
       
      
-    })
+    });
 }
 
 module.exports = gamePlay;
