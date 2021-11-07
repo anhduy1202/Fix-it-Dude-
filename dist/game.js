@@ -75,7 +75,7 @@
             origin("center")
           ]);
           btnHover(btn);
-          btn.onClick(() => debug.log("Start game"));
+          btn.onClick(() => go("gameplay"));
         }, "startButton");
         const quitButton = /* @__PURE__ */ __name((txt2) => {
           const btn = add([
@@ -127,6 +127,49 @@
         });
       }, "btnHover");
       module.exports = startMenu2;
+    }
+  });
+
+  // code/gameplay.js
+  var require_gameplay = __commonJS({
+    "code/gameplay.js"(exports, module) {
+      var gamePlay2 = /* @__PURE__ */ __name(() => {
+        const SPEED = 200;
+        const player = add([
+          scale(3.5),
+          pos(width() * 0.5, height() * 0.5),
+          sprite("fixguy", { anims: "down" })
+        ]);
+        player.action(() => {
+          const left = keyIsDown("left");
+          const right = keyIsDown("right");
+          const up = keyIsDown("up");
+          const down = keyIsDown("down");
+          const curAnim = player.curAnim();
+          if (left) {
+            if (curAnim !== "left") {
+              player.play("left");
+            }
+            player.move(-SPEED, 0);
+          } else if (right) {
+            if (curAnim !== "right") {
+              player.play("right");
+            }
+            player.move(SPEED, 0);
+          } else if (up) {
+            if (curAnim !== "up") {
+              player.play("up");
+            }
+            player.move(0, -SPEED);
+          } else if (down) {
+            if (curAnim !== "down") {
+              player.play("down");
+            }
+            player.move(0, SPEED);
+          }
+        });
+      }, "gamePlay");
+      module.exports = gamePlay2;
     }
   });
 
@@ -2861,16 +2904,35 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/main.js
   var startConver = require_conversations();
   var startMenu = require_menu();
+  var gamePlay = require_gameplay();
   Es({ background: [255, 229, 217] });
   loadSprite("avatar", "sprites/dude-avatar.png");
   loadSprite("mayor", "sprites/mayor.png");
   loadSprite("worker", "sprites/dude-worker.png");
+  loadSpriteAtlas("sprites/woker-movement.png", {
+    "fixguy": {
+      "x": 0,
+      "y": 0,
+      "width": 96,
+      "height": 32,
+      "sliceX": 6,
+      "anims": {
+        "down": { "from": 1, "to": 1, "loop": true, "speed": 7 },
+        "up": { "from": 0, "to": 0, "loop": true, "speed": 7 },
+        "right": { "from": 2, "to": 2, "loop": true, "speed": 7 },
+        "left": { "from": 3, "to": 5, "loop": true, "speed": 7 }
+      }
+    }
+  });
   scene("start", () => {
     startConver();
   });
   go("start");
   scene("startButton", () => {
     startMenu();
+  });
+  scene("gameplay", () => {
+    gamePlay();
   });
 })();
 //# sourceMappingURL=game.js.map

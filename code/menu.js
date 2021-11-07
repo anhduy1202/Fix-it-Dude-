@@ -8,7 +8,7 @@ const startMenu = () => {
       origin("center"),
     ]);
     btnHover(btn);
-    btn.onClick(() => go("ganeplay"));
+    btn.onClick(() => go("gameplay"));
    
   };
   const quitButton = (txt) => {
