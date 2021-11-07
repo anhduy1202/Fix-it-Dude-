@@ -9,6 +9,7 @@ kaboom({ background: [255, 229, 217] });
 loadSprite("avatar", "sprites/dude-avatar.png");
 loadSprite("mayor", "sprites/mayor.png");
 loadSprite("worker", "sprites/dude-worker.png");
+loadSprite("grocery","sprites/grocery.png");
 loadSpriteAtlas('sprites/woker-movement.png', {
   "fixguy": {
     "x": 0,
@@ -25,6 +26,7 @@ loadSpriteAtlas('sprites/woker-movement.png', {
     }
   }
 });
+
 
 scene("start", () => {
   startConver();

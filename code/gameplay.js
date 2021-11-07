@@ -1,14 +1,50 @@
+const levels = [
+  [
+       "                                            ",
+       "                                            ",
+       "                ^                    ^      ",
+       "                                            ",
+       "                                            ",
+       "                                            ",
+       "                                            ",
+       "                                            ",
+       "                                            ",
+       "                                            ",
+       "                                            ",
+  ],  
 
+]
 const gamePlay = () => {
-  
+
+     addLevel(levels[0], {
+      width:32,
+      height:32,
+      "^": () => [
+        sprite("grocery"),
+        scale(3),
+        area({height:32,offset:vec2(0,-15)}),
+        solid(),
+        "store",
+      ],
+
+    })
   const SPEED = 300;
     const player = add([
+    area({width:16, height:16}),
+    solid(),
     scale(3.5),
     pos(width() * 0.5, height() * 0.5),
     sprite("fixguy", {anims: "down"}),
     ]);
     playerMovement(player, SPEED);
 
+    player.onCollide("store",(store)=>{
+     onKeyPress("space",()=>{
+        destroy(store);
+        addKaboom(player.pos);
+     })
+    })
+ 
     
 }
 

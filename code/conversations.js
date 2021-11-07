@@ -3,13 +3,14 @@ const startConver = () => {
     ["avatar", "Hi! I'm the Fix It Dude"],
     [
       "mayor",
-      "Oh hi! I'm Mayonnaise the Mayor, our city is falling apart -panik- ",
+      "Hi! I'm Mayonnaise the Mayor, fix my city ! -panik- ",
     ],
     [
       "worker",
-      "Don't worry Mr.Mayonnaise, I'm here to FIX IT! with money obviously",
+      "Don't worry Mr.Mayonnaise, the best way to FIX anything is by DESTROYING IT !!!",
     ],
-    ["mayor", "... okay, let's play !!"],
+    ["mayor", "WHAT ?!!"],
+    ["mayor", "empty"],
   ];
 
   let currentDialog = 0;
@@ -37,14 +38,16 @@ const startConver = () => {
     pos(width() / 2.6, height() - 100),
     color(233, 196, 106),
   ]);
-  onKeyPress("space", () => {
+  onKeyPress("space", async () => {
     currentDialog = (currentDialog + 1) % dialogs.length;
-    if (currentDialog == dialogs.length - 1) {
+    updateDialog();
+   if (currentDialog == dialogs.length - 1) {
       go("startButton");
     }
-    updateDialog();
-  });
 
+   
+  });
+   
   updateDialog = () => {
     const [char, dialog] = dialogs[currentDialog];
     avatar.use(sprite(char));

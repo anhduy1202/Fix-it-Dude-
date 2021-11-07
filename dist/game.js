@@ -4,6 +4,26 @@
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[Object.keys(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
+  var __async = (__this, __arguments, generator) => {
+    return new Promise((resolve, reject) => {
+      var fulfilled = (value) => {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var rejected = (value) => {
+        try {
+          step(generator.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+      step((generator = generator.apply(__this, __arguments)).next());
+    });
+  };
 
   // code/conversations.js
   var require_conversations = __commonJS({
@@ -13,13 +33,14 @@
           ["avatar", "Hi! I'm the Fix It Dude"],
           [
             "mayor",
-            "Oh hi! I'm Mayonnaise the Mayor, our city is falling apart -panik- "
+            "Hi! I'm Mayonnaise the Mayor, fix my city ! -panik- "
           ],
           [
             "worker",
-            "Don't worry Mr.Mayonnaise, I'm here to FIX IT! with money obviously"
+            "Don't worry Mr.Mayonnaise, the best way to FIX anything is by DESTROYING IT !!!"
           ],
-          ["mayor", "... okay, let's play !!"]
+          ["mayor", "WHAT ?!!"],
+          ["mayor", "empty"]
         ];
         let currentDialog = 0;
         const textbox = add([
@@ -44,13 +65,13 @@
           pos(width() / 2.6, height() - 100),
           color(233, 196, 106)
         ]);
-        onKeyPress("space", () => {
+        onKeyPress("space", () => __async(exports, null, function* () {
           currentDialog = (currentDialog + 1) % dialogs.length;
+          updateDialog();
           if (currentDialog == dialogs.length - 1) {
             go("startButton");
           }
-          updateDialog();
-        });
+        }));
         updateDialog = /* @__PURE__ */ __name(() => {
           const [char, dialog] = dialogs[currentDialog];
           avatar.use(sprite(char));
@@ -133,14 +154,48 @@
   // code/gameplay.js
   var require_gameplay = __commonJS({
     "code/gameplay.js"(exports, module) {
+      var levels = [
+        [
+          "                                            ",
+          "                                            ",
+          "                ^                    ^      ",
+          "                                            ",
+          "                                            ",
+          "                                            ",
+          "                                            ",
+          "                                            ",
+          "                                            ",
+          "                                            ",
+          "                                            "
+        ]
+      ];
       var gamePlay2 = /* @__PURE__ */ __name(() => {
+        addLevel(levels[0], {
+          width: 32,
+          height: 32,
+          "^": () => [
+            sprite("grocery"),
+            scale(3),
+            area({ height: 32, offset: vec2(0, -15) }),
+            solid(),
+            "store"
+          ]
+        });
         const SPEED = 300;
         const player = add([
+          area({ width: 16, height: 16 }),
+          solid(),
           scale(3.5),
           pos(width() * 0.5, height() * 0.5),
           sprite("fixguy", { anims: "down" })
         ]);
         playerMovement(player, SPEED);
+        player.onCollide("store", (store) => {
+          onKeyPress("space", () => {
+            destroy(store);
+            addKaboom(player.pos);
+          });
+        });
       }, "gamePlay");
       var playerMovement = /* @__PURE__ */ __name((player, SPEED) => {
         player.action(() => {
@@ -2912,6 +2967,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("avatar", "sprites/dude-avatar.png");
   loadSprite("mayor", "sprites/mayor.png");
   loadSprite("worker", "sprites/dude-worker.png");
+  loadSprite("grocery", "sprites/grocery.png");
   loadSpriteAtlas("sprites/woker-movement.png", {
     "fixguy": {
       "x": 0,
