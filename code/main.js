@@ -10,6 +10,9 @@ loadSprite("avatar", "sprites/dude-avatar.png");
 loadSprite("mayor", "sprites/mayor.png");
 loadSprite("worker", "sprites/dude-worker.png");
 loadSprite("grocery","sprites/grocery.png");
+loadSprite("buildinglabel","sprites/buildinglabel.png");
+loadSprite("police","sprites/police-cir.png");
+loadSprite("street","sprites/street.png");
 loadSpriteAtlas('sprites/woker-movement.png', {
   "fixguy": {
     "x": 0,
@@ -38,6 +41,6 @@ scene("startButton", () => {
   startMenu();
 });
 
-scene("gameplay", () => {
-  gamePlay();
+scene("gameplay", (levelIdx) => {
+  gamePlay(levelIdx);
 })

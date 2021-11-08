@@ -96,7 +96,7 @@
             origin("center")
           ]);
           btnHover(btn);
-          btn.onClick(() => go("gameplay"));
+          btn.onClick(() => go("gameplay", 0));
         }, "startButton");
         const quitButton = /* @__PURE__ */ __name((txt2) => {
           const btn = add([
@@ -154,50 +154,139 @@
   // code/gameplay.js
   var require_gameplay = __commonJS({
     "code/gameplay.js"(exports, module) {
-      var levels = [
-        [
-          "                                            ",
-          "                                            ",
-          "                ^                    ^      ",
-          "                                            ",
-          "                                            ",
-          "                                            ",
-          "                                            ",
-          "                                            ",
-          "                                            ",
-          "                                            ",
-          "                                            "
-        ]
+      var playerObj = {
+        "destroy": 0,
+        "boost": false
+      };
+      var allLevels = [
+        {
+          "level": [
+            "LT                                             R",
+            "                                                ",
+            "                ^                    ^         ",
+            "                                               ",
+            "                                               ",
+            "    ^                                          ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "B                                              "
+          ],
+          "buildings": 3,
+          "police": 3,
+          "police_speed": 100
+        }
       ];
-      var gamePlay2 = /* @__PURE__ */ __name(() => {
-        addLevel(levels[0], {
+      var gamePlay2 = /* @__PURE__ */ __name((levelIdx) => {
+        let collide = false;
+        let police = 0;
+        const PLAYERSPEED = 300;
+        const ENEMYSPEED = allLevels[levelIdx].police_speed;
+        addLevel(allLevels[levelIdx].level, {
           width: 32,
           height: 32,
           "^": () => [
             sprite("grocery"),
-            scale(3),
-            area({ height: 32, offset: vec2(0, -15) }),
+            scale(2.7),
+            area({ height: 54, width: 56, offset: vec2(9, 2) }),
             solid(),
             "store"
+          ],
+          "T": () => [
+            sprite("street"),
+            area({ width: width(), offset: vec2(0, -35) }),
+            solid()
+          ],
+          "B": () => [
+            sprite("street"),
+            area({ width: width(), offset: vec2(0, -10) }),
+            solid()
+          ],
+          "L": () => [
+            sprite("street"),
+            area({ height: height(), offset: vec2(-20, 0) }),
+            solid()
+          ],
+          "R": () => [
+            sprite("street"),
+            area({ height: height(), offset: vec2(20, 0) }),
+            solid()
           ]
         });
-        const SPEED = 300;
+        const buildingArt = add([
+          sprite("buildinglabel"),
+          pos(24, 24),
+          solid(),
+          area({ width: 74 }),
+          scale(2)
+        ]);
+        const buildingsLabel = add([
+          text("x" + playerObj.destroy),
+          pos(96, 24),
+          fixed()
+        ]);
         const player = add([
-          area({ width: 16, height: 16 }),
+          area({ width: 16, height: 8, offset: vec2(0, 9) }),
           solid(),
           scale(3.5),
           pos(width() * 0.5, height() * 0.5),
           sprite("fixguy", { anims: "down" })
         ]);
-        playerMovement(player, SPEED);
-        player.onCollide("store", (store) => {
-          onKeyPress("space", () => {
-            destroy(store);
-            addKaboom(player.pos);
-          });
+        wait(5, () => {
+          for (; police < allLevels[levelIdx].police; police++) {
+            const policeCar = add([
+              area({ width: 28, height: 24, offset: vec2(3, 0) }),
+              solid(),
+              scale(2),
+              pos(rand(vec2(width() / 2), vec2(height() / 4))),
+              sprite("police"),
+              "enemy"
+            ]);
+          }
         });
+        playerMovement(player, PLAYERSPEED);
+        onKeyPress("space", () => {
+          collide = true;
+        });
+        onKeyRelease("space", () => {
+          collide = false;
+        });
+        player.onCollide("store", (store) => {
+          if (collide) {
+            destroy(store);
+            playerObj.destroy += 1;
+            buildingsLabel.text = "x" + playerObj.destroy;
+            addKaboom(player.pos);
+          }
+        });
+        action("enemy", (s) => {
+          const direction = player.pos.sub(s.pos).unit();
+          s.move(direction.scale(ENEMYSPEED));
+        });
+        onUpdate(() => {
+          if (playerObj.destroy == allLevels[levelIdx].buildings) {
+            playerObj.destroy = 0;
+            debug.log("You win!");
+            go("startButton");
+          }
+        });
+        debug.inspect = true;
       }, "gamePlay");
-      var playerMovement = /* @__PURE__ */ __name((player, SPEED) => {
+      var playerMovement = /* @__PURE__ */ __name((player, PLAYERSPEED) => {
         player.action(() => {
           const left = keyIsDown("left");
           const right = keyIsDown("right");
@@ -208,22 +297,22 @@
             if (curAnim !== "left") {
               player.play("left");
             }
-            player.move(-SPEED, 0);
+            player.move(-PLAYERSPEED, 0);
           } else if (right) {
             if (curAnim !== "right") {
               player.play("right");
             }
-            player.move(SPEED, 0);
+            player.move(PLAYERSPEED, 0);
           } else if (up) {
             if (curAnim !== "up") {
               player.play("up");
             }
-            player.move(0, -SPEED);
+            player.move(0, -PLAYERSPEED);
           } else if (down) {
             if (curAnim !== "down") {
               player.play("down");
             }
-            player.move(0, SPEED);
+            player.move(0, PLAYERSPEED);
           }
         });
       }, "playerMovement");
@@ -2968,6 +3057,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("mayor", "sprites/mayor.png");
   loadSprite("worker", "sprites/dude-worker.png");
   loadSprite("grocery", "sprites/grocery.png");
+  loadSprite("buildinglabel", "sprites/buildinglabel.png");
+  loadSprite("police", "sprites/police-cir.png");
+  loadSprite("street", "sprites/street.png");
   loadSpriteAtlas("sprites/woker-movement.png", {
     "fixguy": {
       "x": 0,
@@ -2990,8 +3082,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   scene("startButton", () => {
     startMenu();
   });
-  scene("gameplay", () => {
-    gamePlay();
+  scene("gameplay", (levelIdx) => {
+    gamePlay(levelIdx);
   });
 })();
 //# sourceMappingURL=game.js.map
