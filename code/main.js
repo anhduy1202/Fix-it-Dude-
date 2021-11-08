@@ -26,19 +26,19 @@ loadSprite("grocery2","sprites/pink-grocery.png");
 loadSprite("buildinglabel","sprites/buildinglabel.png");
 loadSprite("police","sprites/police-cir.png");
 loadSprite("street","sprites/street.png");
-loadSpriteAtlas('sprites/woker-movement.png', {
+loadSpriteAtlas('sprites/spritesheet2.png', {
   "fixguy": {
     "x": 0,
     "y": 0,
-    "width": 96,
+    "width": 192,
     "height": 32,
-    "sliceX": 6,
+    "sliceX": 12,
     "anims": {
   
-      "down": {"from": 1, "to":1, "loop":true, "speed": 7},
-      "up": {"from": 0, "to":0, "loop":true, "speed": 7},
-      "right": {"from": 2, "to":2, "loop":true, "speed": 7},
-      "left": {"from":3, "to":5, "loop":true, "speed":7},
+      "down": {"from": 3, "to":5, "loop":true, "speed": 7},
+      "up": {"from": 0, "to":2, "loop":true, "speed": 7},
+      "right": {"from":6, "to":8, "loop":true, "speed": 10},
+      "left": {"from":9, "to":11, "loop":true, "speed":10},
     }
   }
 });

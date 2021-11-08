@@ -256,7 +256,7 @@
           "buildings": 4,
           "police_time": 5,
           "police": 3,
-          "police_speed": 130
+          "police_speed": 125
         },
         {
           "level": [
@@ -290,7 +290,7 @@
           "buildings": 5,
           "police_time": 4,
           "police": 4,
-          "police_speed": 135
+          "police_speed": 130
         },
         {
           "level": [
@@ -324,7 +324,7 @@
           "buildings": 7,
           "police_time": 4,
           "police": 6,
-          "police_speed": 150
+          "police_speed": 145
         }
       ];
       var gamePlay2 = /* @__PURE__ */ __name((levelIdx) => {
@@ -3298,18 +3298,18 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("buildinglabel", "sprites/buildinglabel.png");
   loadSprite("police", "sprites/police-cir.png");
   loadSprite("street", "sprites/street.png");
-  loadSpriteAtlas("sprites/woker-movement.png", {
+  loadSpriteAtlas("sprites/spritesheet2.png", {
     "fixguy": {
       "x": 0,
       "y": 0,
-      "width": 96,
+      "width": 192,
       "height": 32,
-      "sliceX": 6,
+      "sliceX": 12,
       "anims": {
-        "down": { "from": 1, "to": 1, "loop": true, "speed": 7 },
-        "up": { "from": 0, "to": 0, "loop": true, "speed": 7 },
-        "right": { "from": 2, "to": 2, "loop": true, "speed": 7 },
-        "left": { "from": 3, "to": 5, "loop": true, "speed": 7 }
+        "down": { "from": 3, "to": 5, "loop": true, "speed": 7 },
+        "up": { "from": 0, "to": 2, "loop": true, "speed": 7 },
+        "right": { "from": 6, "to": 8, "loop": true, "speed": 10 },
+        "left": { "from": 9, "to": 11, "loop": true, "speed": 10 }
       }
     }
   });
