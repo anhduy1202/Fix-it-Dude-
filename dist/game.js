@@ -29,11 +29,16 @@
   var require_conversations = __commonJS({
     "code/conversations.js"(exports, module) {
       var startConver2 = /* @__PURE__ */ __name(() => {
+        const bgMusic = play("arcade", {
+          loop: true,
+          volume: 0.5
+        });
+        bgMusic.play();
         const dialogs = [
           ["avatar", "Hi! I'm the Fix It Dude"],
           [
             "mayor",
-            "Hi! I'm Mayonnaise the Mayor, fix my city ! -panik- "
+            "Hi! I'm Mayonnaise the Mayor, fix my city ! -panik-"
           ],
           [
             "worker",
@@ -66,9 +71,11 @@
           color(233, 196, 106)
         ]);
         onKeyPress("space", () => __async(exports, null, function* () {
+          play("click");
           currentDialog = (currentDialog + 1) % dialogs.length;
           updateDialog();
           if (currentDialog == dialogs.length - 1) {
+            bgMusic.pause();
             go("startButton");
           }
         }));
@@ -86,8 +93,13 @@
   // code/menu.js
   var require_menu = __commonJS({
     "code/menu.js"(exports, module) {
-      var startMenu2 = /* @__PURE__ */ __name(() => {
-        const startButton = /* @__PURE__ */ __name((txt2) => {
+      var startMenu2 = /* @__PURE__ */ __name((score) => {
+        const bgMusic = play("arcade", {
+          loop: true,
+          volume: 0.5
+        });
+        bgMusic.play();
+        const startButton = /* @__PURE__ */ __name((txt2, bgMusic2) => {
           const btn = add([
             text(txt2, { size: 48 }),
             pos(center().x, height() - 450),
@@ -96,9 +108,13 @@
             origin("center")
           ]);
           btnHover(btn);
-          btn.onClick(() => go("gameplay", 0));
+          btn.onClick(() => {
+            bgMusic2.pause();
+            play("click");
+            go("gameplay", 0);
+          });
         }, "startButton");
-        const quitButton = /* @__PURE__ */ __name((txt2) => {
+        const quitButton = /* @__PURE__ */ __name((txt2, bgMusic2) => {
           const btn = add([
             text(txt2, { size: 48 }),
             pos(center().x, height() - 350),
@@ -107,13 +123,17 @@
             origin("center")
           ]);
           btnHover(btn);
-          btn.onClick(() => debug.log("Quit game"));
+          btn.onClick(() => {
+            bgMusic2.pause();
+            play("click");
+            go("quit");
+          });
         }, "quitButton");
         const textbox = add([
           rect(500, 300, { radius: 32 }),
           origin("center"),
           pos(center().x, height() - 400),
-          outline(2)
+          outline(4)
         ]);
         const worker = add([
           sprite("worker"),
@@ -127,21 +147,32 @@
           origin("center"),
           pos(center().sub(70, 250))
         ]);
+        if (score >= 0) {
+          const textScore = add([
+            text("BUILDINGS: " + score, { size: 48 }),
+            pos(center().x, height() - 80),
+            origin("center")
+          ]);
+        }
         const txt = add([
-          text("FIX IT DUDE", { size: 64, width: width() - 230, font: "sinko" }),
+          text(`"FIX" IT DUDE`, { size: 64, width: width() - 230, font: "sinko" }),
+          outline(2),
           color(254, 200, 154),
           pos(center().x, height() - 170),
           origin("center")
         ]);
-        startButton("Start");
-        quitButton("Quit");
+        startButton("START", bgMusic);
+        quitButton("QUIT", bgMusic);
       }, "startMenu");
       var btnHover = /* @__PURE__ */ __name((btn) => {
+        const hoverSfx = play("hover");
         btn.onUpdate(() => {
           if (btn.isHovering()) {
+            hoverSfx.play();
             btn.color = rgb(254, 197, 187);
             btn.scale = vec2(1.2);
           } else {
+            hoverSfx.pause();
             btn.color = rgb();
             btn.scale = vec2(1);
           }
@@ -161,10 +192,10 @@
       var allLevels = [
         {
           "level": [
-            "LT                                             R",
-            "                                                ",
-            "                ^                    ^         ",
+            "LT                                            R",
             "                                               ",
+            "                                               ",
+            "                                     ^         ",
             "                                               ",
             "    ^                                          ",
             "                                               ",
@@ -186,21 +217,141 @@
             "                                               ",
             "B                                              "
           ],
-          "buildings": 3,
+          "music": "level1",
+          "time": 12,
+          "buildings": 2,
+          "police_time": 5,
+          "police": 2,
+          "police_speed": 120
+        },
+        {
+          "level": [
+            "LT                                            R",
+            "                                               ",
+            "                                               ",
+            "                 ^                   %         ",
+            "                                               ",
+            "    %                                          ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "    ^                                          ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "B                                              "
+          ],
+          "music": "level2",
+          "time": 15,
+          "buildings": 4,
+          "police_time": 5,
           "police": 3,
-          "police_speed": 100
+          "police_speed": 130
+        },
+        {
+          "level": [
+            "LT                                            R",
+            "                                               ",
+            "                                               ",
+            "                 ^                   ^         ",
+            "                                               ",
+            "    %                                          ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                          %                    ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "    %                                          ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "B                                              "
+          ],
+          "music": "level3",
+          "time": 20,
+          "buildings": 5,
+          "police_time": 4,
+          "police": 4,
+          "police_speed": 135
+        },
+        {
+          "level": [
+            "LT                                            R",
+            "                                               ",
+            "                                               ",
+            "                 ^                   ^         ",
+            "                                               ",
+            "    %                                          ",
+            "                                               ",
+            "               %                               ",
+            "                                               ",
+            "                                               ",
+            "                          %                    ",
+            "                                               ",
+            "                                               ",
+            "                                    ^          ",
+            "    %                                          ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "                                               ",
+            "B                                              "
+          ],
+          "music": "level4",
+          "time": 30,
+          "buildings": 7,
+          "police_time": 4,
+          "police": 6,
+          "police_speed": 150
         }
       ];
       var gamePlay2 = /* @__PURE__ */ __name((levelIdx) => {
         let collide = false;
+        let currentLevel = allLevels[levelIdx];
         let police = 0;
+        let buildings = currentLevel.buildings;
         const PLAYERSPEED = 300;
-        const ENEMYSPEED = allLevels[levelIdx].police_speed;
-        addLevel(allLevels[levelIdx].level, {
+        const TIME_LEFT = currentLevel.time;
+        const ENEMYSPEED = currentLevel.police_speed;
+        const gameMusic = play(currentLevel.music, {
+          loop: true,
+          volume: 0.5
+        });
+        gameMusic.play();
+        addLevel(currentLevel.level, {
           width: 32,
           height: 32,
           "^": () => [
             sprite("grocery"),
+            scale(2.7),
+            area({ height: 54, width: 56, offset: vec2(9, 2) }),
+            solid(),
+            "store"
+          ],
+          "%": () => [
+            sprite("grocery2"),
             scale(2.7),
             area({ height: 54, width: 56, offset: vec2(9, 2) }),
             solid(),
@@ -227,6 +378,27 @@
             solid()
           ]
         });
+        const noteTxt = add([
+          text("Note: HOLD arrow key + SPACE to destroy", { size: 32 }),
+          pos(10, height() - 50)
+        ]);
+        const timer = add([
+          text("0"),
+          pos(width() / 2 - 50, 10),
+          layer("ui"),
+          {
+            time: TIME_LEFT
+          }
+        ]);
+        timer.action(() => {
+          timer.time -= dt();
+          timer.text = timer.time.toFixed(2);
+          if (timer.time <= 0) {
+            go("lose", playerObj.destroy);
+            playerObj.destroy = 0;
+            gameMusic.pause();
+          }
+        });
         const buildingArt = add([
           sprite("buildinglabel"),
           pos(24, 24),
@@ -240,14 +412,15 @@
           fixed()
         ]);
         const player = add([
-          area({ width: 16, height: 8, offset: vec2(0, 9) }),
+          area({ width: 14, height: 25, offset: vec2(3, 9) }),
           solid(),
           scale(3.5),
           pos(width() * 0.5, height() * 0.5),
           sprite("fixguy", { anims: "down" })
         ]);
-        wait(5, () => {
-          for (; police < allLevels[levelIdx].police; police++) {
+        playerMovement(player, PLAYERSPEED);
+        wait(currentLevel.police_time, () => {
+          for (; police < currentLevel.police; police++) {
             const policeCar = add([
               area({ width: 28, height: 24, offset: vec2(3, 0) }),
               solid(),
@@ -258,7 +431,6 @@
             ]);
           }
         });
-        playerMovement(player, PLAYERSPEED);
         onKeyPress("space", () => {
           collide = true;
         });
@@ -266,25 +438,41 @@
           collide = false;
         });
         player.onCollide("store", (store) => {
-          if (collide) {
+          if (collide && buildings > 1) {
+            play("kaboom", { volume: 0.5 });
+            destroy(store);
+            playerObj.destroy += 1;
+            buildings--;
+            buildingsLabel.text = "x" + playerObj.destroy;
+            addKaboom(player.pos);
+          } else if (collide && buildings == 1) {
+            play("kaboom", { volume: 0.5 });
             destroy(store);
             playerObj.destroy += 1;
             buildingsLabel.text = "x" + playerObj.destroy;
             addKaboom(player.pos);
+            wait(1, () => {
+              if (levelIdx < allLevels.length - 1) {
+                gameMusic.pause();
+                go("gameplay", levelIdx + 1);
+              } else {
+                gameMusic.pause();
+                go("startButton", playerObj.destroy);
+              }
+            });
           }
+        });
+        player.onCollide("enemy", (enemy) => {
+          play("hit");
+          addKaboom(player.pos);
+          gameMusic.pause();
+          go("lose", playerObj.destroy);
+          playerObj.destroy = 0;
         });
         action("enemy", (s) => {
           const direction = player.pos.sub(s.pos).unit();
           s.move(direction.scale(ENEMYSPEED));
         });
-        onUpdate(() => {
-          if (playerObj.destroy == allLevels[levelIdx].buildings) {
-            playerObj.destroy = 0;
-            debug.log("You win!");
-            go("startButton");
-          }
-        });
-        debug.inspect = true;
       }, "gamePlay");
       var playerMovement = /* @__PURE__ */ __name((player, PLAYERSPEED) => {
         player.action(() => {
@@ -317,6 +505,44 @@
         });
       }, "playerMovement");
       module.exports = gamePlay2;
+    }
+  });
+
+  // code/lose.js
+  var require_lose = __commonJS({
+    "code/lose.js"(exports, module) {
+      var displayLose2 = /* @__PURE__ */ __name((score) => {
+        go("startButton", score);
+      }, "displayLose");
+      module.exports = displayLose2;
+    }
+  });
+
+  // code/quit.js
+  var require_quit = __commonJS({
+    "code/quit.js"(exports, module) {
+      var quitGame2 = /* @__PURE__ */ __name(() => {
+        const textbox = add([
+          rect(500, 300, { radius: 32 }),
+          origin("center"),
+          pos(center().x, height() - 400),
+          outline(4)
+        ]);
+        const quitTxt = add([
+          text("BYE BYE :D", { size: 64 }),
+          pos(center().x, center().y),
+          scale(1),
+          origin("center")
+        ]);
+        const credit = add([
+          text("Made by: Daniel Truong @2021", { size: 24 }),
+          color(0, 150, 199),
+          pos(center().x, center().y + 100),
+          scale(1),
+          origin("center")
+        ]);
+      }, "quitGame");
+      module.exports = quitGame2;
     }
   });
 
@@ -728,7 +954,7 @@
   }
   __name(pn, "pn");
   i(pn, "testPointPoint");
-  function dt(e, t) {
+  function dt2(e, t) {
     switch (e.shape) {
       case "rect":
         return At(t, e);
@@ -743,8 +969,8 @@
     }
     throw new Error(`Unknown area shape: ${e.shape}`);
   }
-  __name(dt, "dt");
-  i(dt, "testAreaRect");
+  __name(dt2, "dt");
+  i(dt2, "testAreaRect");
   function kt(e, t) {
     switch (e.shape) {
       case "rect":
@@ -816,7 +1042,7 @@
   function Ft(e, t) {
     switch (t.shape) {
       case "rect":
-        return dt(e, t);
+        return dt2(e, t);
       case "line":
         return kt(e, t);
       case "circle":
@@ -2458,7 +2684,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       let s = 0;
       return { id: "cleanup", require: ["pos", "area"], update() {
         let u = { p1: c(0, 0), p2: c(b(), P()) };
-        dt(this.screenArea(), u) ? s = 0 : (s += L(), s >= n && this.destroy());
+        dt2(this.screenArea(), u) ? s = 0 : (s += L(), s >= n && this.destroy());
       } };
     }
     __name(Ue, "Ue");
@@ -2955,7 +3181,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     __name(Yt, "Yt");
     i(Yt, "record");
-    let Xe = { loadRoot: v.loadRoot, loadSprite: v.loadSprite, loadSpriteAtlas: v.loadSpriteAtlas, loadSound: v.loadSound, loadFont: v.loadFont, loadShader: v.loadShader, loadAseprite: v.loadAseprite, loadPedit: v.loadPedit, loadBean: v.loadBean, load: v.load, width: b, height: P, center: vt, dt: L, time: r.time, screenshot: r.screenshot, record: Yt, focused: r.isFocused, isFocused: r.isFocused, focus: r.focus, cursor: r.cursor, regCursor: Ut, fullscreen: r.fullscreen, isFullscreen: r.isFullscreen, onLoad: _e, ready: _e, isTouch: () => r.isTouch, layers: ye, camPos: S, camScale: T, camRot: _, shake: z, toScreen: X, toWorld: W, gravity: et, add: F, readd: ae, destroy: Me, destroyAll: Ve, get: be, every: me, revery: Ye, pos: ge, scale: tt, rotate: gt, color: Ze, opacity: Je, origin: wt, layer: xt, area: Lr, sprite: Fr, text: Or, rect: _r, circle: Wr, uvquad: Xr, outline: qr, body: zr, shader: Zr, timer: $r, solid: Jr, fixed: Hr, stay: Nr, health: jr, lifespan: Qr, z: rt, move: we, cleanup: Ue, follow: nt, state: Kr, on: w, onUpdate: G, onDraw: De, onCollide: Re, onClick: Ee, onHover: ce, action: G, render: De, collides: Re, clicks: Ee, hovers: ce, onKeyDown: o, onKeyPress: f, onKeyPressRepeat: U, onKeyRelease: R, onMouseDown: x, onMousePress: E, onMouseRelease: C, onMouseMove: O, onCharInput: H, onTouchStart: re, onTouchMove: Z, onTouchEnd: ee, keyDown: o, keyPress: f, keyPressRep: U, keyRelease: R, mouseDown: x, mouseClick: E, mouseRelease: C, mouseMove: O, charInput: H, touchStart: re, touchMove: Z, touchEnd: ee, mousePos: Y, mouseWorldPos: ie, mouseDeltaPos: r.mouseDeltaPos, isKeyDown: r.isKeyDown, isKeyPressed: r.isKeyPressed, isKeyPressedRepeat: r.isKeyPressedRepeat, isKeyReleased: r.isKeyReleased, isMouseDown: r.isMouseDown, isMousePressed: r.isMousePressed, isMouseReleased: r.isMouseReleased, isMouseMoved: r.isMouseMoved, keyIsDown: r.isKeyDown, keyIsPressed: r.isKeyPressed, keyIsPressedRep: r.isKeyPressedRepeat, keyIsReleased: r.isKeyReleased, mouseIsDown: r.isMouseDown, mouseIsClicked: r.isMousePressed, mouseIsReleased: r.isMouseReleased, mouseIsMoved: r.isMouseMoved, loop: bt, wait: xe, play: N, volume: t.volume, burp: t.burp, audioCtx: t.ctx, rng: Dt, rand: je, randi: Rt, randSeed: ar, vec2: c, dir: ot, rgb: I, hsl2rgb: ir, quad: de, choose: cr, chance: ur, lerp: Ne, map: Oe, mapc: rr, wave: Pt, deg2rad: Ce, rad2deg: Tt, testAreaRect: dt, testAreaLine: kt, testAreaCircle: It, testAreaPolygon: Lt, testAreaPoint: ht, testAreaArea: Ft, testLineLine: Se, testRectRect: At, testRectLine: at, testRectPoint: Be, testPolygonPoint: $e, testLinePolygon: Qe, testPolygonPolygon: lt, testCircleCircle: Vt, testCirclePoint: ct, testRectPolygon: ut, drawSprite: j, drawText: oe, drawRect: a.drawRect, drawLine: a.drawLine, drawLines: a.drawLines, drawTriangle: a.drawTriangle, drawCircle: a.drawCircle, drawEllipse: a.drawEllipse, drawUVQuad: a.drawUVQuad, drawPolygon: a.drawPolygon, pushTransform: a.pushTransform, popTransform: a.popTransform, pushTranslate: a.pushTranslate, pushRotate: a.pushRotateZ, pushScale: a.pushScale, debug: Q, scene: en, go: tn, addLevel: sn, getData: rn, setData: Gt, plug: Et, ASCII_CHARS: qt, CP437_CHARS: Dr, LEFT: c(-1, 0), RIGHT: c(1, 0), UP: c(0, -1), DOWN: c(0, 1), RED: I(255, 0, 0), GREEN: I(0, 255, 0), BLUE: I(0, 0, 255), YELLOW: I(255, 255, 0), MAGENTA: I(255, 0, 255), CYAN: I(0, 255, 255), WHITE: I(255, 255, 255), BLACK: I(0, 0, 0), canvas: r.canvas };
+    let Xe = { loadRoot: v.loadRoot, loadSprite: v.loadSprite, loadSpriteAtlas: v.loadSpriteAtlas, loadSound: v.loadSound, loadFont: v.loadFont, loadShader: v.loadShader, loadAseprite: v.loadAseprite, loadPedit: v.loadPedit, loadBean: v.loadBean, load: v.load, width: b, height: P, center: vt, dt: L, time: r.time, screenshot: r.screenshot, record: Yt, focused: r.isFocused, isFocused: r.isFocused, focus: r.focus, cursor: r.cursor, regCursor: Ut, fullscreen: r.fullscreen, isFullscreen: r.isFullscreen, onLoad: _e, ready: _e, isTouch: () => r.isTouch, layers: ye, camPos: S, camScale: T, camRot: _, shake: z, toScreen: X, toWorld: W, gravity: et, add: F, readd: ae, destroy: Me, destroyAll: Ve, get: be, every: me, revery: Ye, pos: ge, scale: tt, rotate: gt, color: Ze, opacity: Je, origin: wt, layer: xt, area: Lr, sprite: Fr, text: Or, rect: _r, circle: Wr, uvquad: Xr, outline: qr, body: zr, shader: Zr, timer: $r, solid: Jr, fixed: Hr, stay: Nr, health: jr, lifespan: Qr, z: rt, move: we, cleanup: Ue, follow: nt, state: Kr, on: w, onUpdate: G, onDraw: De, onCollide: Re, onClick: Ee, onHover: ce, action: G, render: De, collides: Re, clicks: Ee, hovers: ce, onKeyDown: o, onKeyPress: f, onKeyPressRepeat: U, onKeyRelease: R, onMouseDown: x, onMousePress: E, onMouseRelease: C, onMouseMove: O, onCharInput: H, onTouchStart: re, onTouchMove: Z, onTouchEnd: ee, keyDown: o, keyPress: f, keyPressRep: U, keyRelease: R, mouseDown: x, mouseClick: E, mouseRelease: C, mouseMove: O, charInput: H, touchStart: re, touchMove: Z, touchEnd: ee, mousePos: Y, mouseWorldPos: ie, mouseDeltaPos: r.mouseDeltaPos, isKeyDown: r.isKeyDown, isKeyPressed: r.isKeyPressed, isKeyPressedRepeat: r.isKeyPressedRepeat, isKeyReleased: r.isKeyReleased, isMouseDown: r.isMouseDown, isMousePressed: r.isMousePressed, isMouseReleased: r.isMouseReleased, isMouseMoved: r.isMouseMoved, keyIsDown: r.isKeyDown, keyIsPressed: r.isKeyPressed, keyIsPressedRep: r.isKeyPressedRepeat, keyIsReleased: r.isKeyReleased, mouseIsDown: r.isMouseDown, mouseIsClicked: r.isMousePressed, mouseIsReleased: r.isMouseReleased, mouseIsMoved: r.isMouseMoved, loop: bt, wait: xe, play: N, volume: t.volume, burp: t.burp, audioCtx: t.ctx, rng: Dt, rand: je, randi: Rt, randSeed: ar, vec2: c, dir: ot, rgb: I, hsl2rgb: ir, quad: de, choose: cr, chance: ur, lerp: Ne, map: Oe, mapc: rr, wave: Pt, deg2rad: Ce, rad2deg: Tt, testAreaRect: dt2, testAreaLine: kt, testAreaCircle: It, testAreaPolygon: Lt, testAreaPoint: ht, testAreaArea: Ft, testLineLine: Se, testRectRect: At, testRectLine: at, testRectPoint: Be, testPolygonPoint: $e, testLinePolygon: Qe, testPolygonPolygon: lt, testCircleCircle: Vt, testCirclePoint: ct, testRectPolygon: ut, drawSprite: j, drawText: oe, drawRect: a.drawRect, drawLine: a.drawLine, drawLines: a.drawLines, drawTriangle: a.drawTriangle, drawCircle: a.drawCircle, drawEllipse: a.drawEllipse, drawUVQuad: a.drawUVQuad, drawPolygon: a.drawPolygon, pushTransform: a.pushTransform, popTransform: a.popTransform, pushTranslate: a.pushTranslate, pushRotate: a.pushRotateZ, pushScale: a.pushScale, debug: Q, scene: en, go: tn, addLevel: sn, getData: rn, setData: Gt, plug: Et, ASCII_CHARS: qt, CP437_CHARS: Dr, LEFT: c(-1, 0), RIGHT: c(1, 0), UP: c(0, -1), DOWN: c(0, 1), RED: I(255, 0, 0), GREEN: I(0, 255, 0), BLUE: I(0, 0, 255), YELLOW: I(255, 255, 0), MAGENTA: I(255, 0, 255), CYAN: I(0, 255, 255), WHITE: I(255, 255, 255), BLACK: I(0, 0, 0), canvas: r.canvas };
     if (Et(Ir), e.plugins && e.plugins.forEach(Et), e.global !== false)
       for (let n in Xe)
         window[n] = Xe[n];
@@ -3052,11 +3278,23 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var startConver = require_conversations();
   var startMenu = require_menu();
   var gamePlay = require_gameplay();
+  var displayLose = require_lose();
+  var quitGame = require_quit();
   Es({ background: [255, 229, 217] });
+  loadSound("level4", "sounds/level4.mp3");
+  loadSound("level3", "sounds/level3.mp3");
+  loadSound("level2", "sounds/level2.mp3");
+  loadSound("level1", "sounds/gamemusic.mp3");
+  loadSound("arcade", "sounds/arcade.mp3");
+  loadSound("hit", "sounds/hit.wav");
+  loadSound("kaboom", "sounds/kaboom.wav");
+  loadSound("click", "sounds/click.wav");
+  loadSound("hover", "sounds/hover.wav");
   loadSprite("avatar", "sprites/dude-avatar.png");
   loadSprite("mayor", "sprites/mayor.png");
   loadSprite("worker", "sprites/dude-worker.png");
   loadSprite("grocery", "sprites/grocery.png");
+  loadSprite("grocery2", "sprites/pink-grocery.png");
   loadSprite("buildinglabel", "sprites/buildinglabel.png");
   loadSprite("police", "sprites/police-cir.png");
   loadSprite("street", "sprites/street.png");
@@ -3079,11 +3317,17 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     startConver();
   });
   go("start");
-  scene("startButton", () => {
-    startMenu();
+  scene("quit", () => {
+    quitGame();
+  });
+  scene("startButton", (score) => {
+    startMenu(score);
   });
   scene("gameplay", (levelIdx) => {
     gamePlay(levelIdx);
+  });
+  scene("lose", (score) => {
+    displayLose(score);
   });
 })();
 //# sourceMappingURL=game.js.map

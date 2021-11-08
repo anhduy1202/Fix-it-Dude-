@@ -5,14 +5,14 @@ let playerObj = {
 }
 
 //Game Object
-let allLevels = [
+const allLevels = [
   {
       "level":
   [
-       "LT                                             R",
-       "                                                ",
-       "                ^                    ^         ",
+       "LT                                            R",
        "                                               ",
+       "                                               ",
+       "                                     ^         ",
        "                                               ",
        "    ^                                          ",
        "                                               ",
@@ -34,25 +34,151 @@ let allLevels = [
        "                                               ",
        "B                                              ",
   ],
-      "buildings": 3,  
+      "music":"level1",
+      "time": 12,
+      "buildings": 2,  
+      "police_time":5,
+      "police": 2,
+      "police_speed":120,
+  },
+  {
+      "level":
+  [
+       "LT                                            R",
+       "                                               ",
+       "                                               ",
+       "                 ^                   %         ",
+       "                                               ",
+       "    %                                          ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "    ^                                          ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "B                                              ",
+  ],
+      "music": "level2",
+      "time": 15,
+      "buildings": 4,  
+      "police_time":5,
       "police": 3,
-      "police_speed":100,
+      "police_speed":125,
+  },
+   {
+      "level":
+  [
+       "LT                                            R",
+       "                                               ",
+       "                                               ",
+       "                 ^                   ^         ",
+       "                                               ",
+       "    %                                          ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                          %                    ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "    %                                          ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "B                                              ",
+  ],
+      "music":"level3",
+      "time": 20,
+      "buildings": 5,  
+      "police_time":4,
+      "police": 4,
+      "police_speed":130,
+  },
+    {
+      "level":
+  [
+       "LT                                            R",
+       "                                               ",
+       "                                               ",
+       "                 ^                   ^         ",
+       "                                               ",
+       "    %                                          ",
+       "                                               ",
+       "               %                               ",
+       "                                               ",
+       "                                               ",
+       "                          %                    ",
+       "                                               ",
+       "                                               ",
+       "                                    ^          ",
+       "    %                                          ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "                                               ",
+       "B                                              ",
+  ],
+      "music":"level4",
+      "time": 30,
+      "buildings": 7,  
+      "police_time":4,
+      "police": 6,
+      "police_speed":145,
   },
 
-]
+]; 
+
 
 const gamePlay = (levelIdx) => {
+ 
   let collide = false;
+  let currentLevel = allLevels[levelIdx];
   let police = 0;
+  let buildings = currentLevel.buildings;
   const PLAYERSPEED = 300;
-  const ENEMYSPEED = allLevels[levelIdx].police_speed;
+  const TIME_LEFT = currentLevel.time;
+  const ENEMYSPEED = currentLevel.police_speed;
   
-
-     addLevel(allLevels[levelIdx].level, {
+  const gameMusic = play(currentLevel.music,{
+    loop:true,
+    volume:0.5
+  })
+  
+  gameMusic.play();
+  
+     addLevel(currentLevel.level, {
       width:32,
       height:32,
       "^": () => [
         sprite("grocery"),
+        scale(2.7),
+        area({height:54,width:56,offset:vec2(9,2)}),
+        solid(),
+        "store",
+      ],
+      "%": () => [
+        sprite("grocery2"),
         scale(2.7),
         area({height:54,width:56,offset:vec2(9,2)}),
         solid(),
@@ -78,8 +204,31 @@ const gamePlay = (levelIdx) => {
         area({height:height(),offset:vec2(20,0)}),
         solid(),
       ],
-
+      
     })
+    
+    const noteTxt = add([
+      text("Note: HOLD arrow key + SPACE to destroy",{size:32}),
+      pos(10,height()-50),
+    ])
+
+    const timer = add([
+       text('0'),
+       pos((width()/2)-50,10),
+       layer('ui'),
+      {
+        time: TIME_LEFT     
+      },
+                    ])
+    timer.action(()=>{
+      timer.time -= dt();
+      timer.text = timer.time.toFixed(2);
+      if (timer.time <= 0) {
+           go('lose', playerObj.destroy);
+           playerObj.destroy = 0;
+           gameMusic.pause();
+                            }
+                    })  
     const buildingArt = add([
       sprite("buildinglabel"),
       pos(24,24),
@@ -88,22 +237,23 @@ const gamePlay = (levelIdx) => {
       scale(2),
     ])
     const buildingsLabel = add([
-      text("x"+playerObj.destroy),
+      text("x"+ playerObj.destroy),
       pos(96,24),
       fixed(),
     ])
 
     const player = add([
-    area({width:16, height:8,offset:vec2(0,9)}),
+    area({width:14, height:25,offset:vec2(3,9)}),
     solid(),
     scale(3.5),
     pos(width() * 0.5, height() * 0.5),
     sprite("fixguy", {anims: "down"}),
     ]);
-    
-    //Spawn police after every 5 secs
-    wait(5, () => {
-      for(; police < allLevels[levelIdx].police; police++) {
+    playerMovement(player, PLAYERSPEED);
+
+  //Spawn police 
+    wait(currentLevel.police_time, () => {
+      for(; police < currentLevel.police; police++) {
        const policeCar = add([
         area({width:28, height:24,offset:vec2(3,0)}),
         solid(),
@@ -117,7 +267,7 @@ const gamePlay = (levelIdx) => {
      
     
 
-    playerMovement(player, PLAYERSPEED);
+    
 
     onKeyPress("space",()=>{
          collide = true;
@@ -126,13 +276,42 @@ const gamePlay = (levelIdx) => {
           collide = false;
      })
 
+    //Destroy buildings 
     player.onCollide("store",(store)=>{
-      if(collide) {
+      if(collide && buildings > 1) {
+        play("kaboom", {volume: 0.5});
+        destroy(store);
+        playerObj.destroy += 1;
+        buildings--;
+        buildingsLabel.text ="x"+playerObj.destroy;
+        addKaboom(player.pos);
+      }
+      else if (collide && buildings == 1) {
+        play("kaboom", {volume:0.5});
         destroy(store);
         playerObj.destroy += 1;
         buildingsLabel.text ="x"+playerObj.destroy;
         addKaboom(player.pos);
+        wait(1, ()=> {
+          if(levelIdx < allLevels.length-1) {
+             gameMusic.pause();
+             go("gameplay",levelIdx+1);
+          }
+          else{
+             gameMusic.pause();
+             go("startButton",playerObj.destroy);
+          }
+        })
       }
+    })
+
+    //Lose when collide with enemy
+    player.onCollide("enemy",(enemy)=> {
+      play("hit");
+      addKaboom(player.pos);
+      gameMusic.pause();
+      go("lose",playerObj.destroy);
+      playerObj.destroy = 0;
     })
 
     //enemy movement 
@@ -141,17 +320,7 @@ const gamePlay = (levelIdx) => {
        s.move(direction.scale(ENEMYSPEED));
      })
         
-    //Checking for winning condition
-    onUpdate(()=> {
-       if(playerObj.destroy == allLevels[levelIdx].buildings) {
-        playerObj.destroy = 0;
-        debug.log("You win!");
-        go("startButton"); //Change later
-      }
-    })
-debug.inspect = true
-   
-    
+    //Checking for winning condition 
 }
 
 const playerMovement = (player,PLAYERSPEED) => {

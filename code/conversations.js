@@ -1,9 +1,14 @@
 const startConver = () => {
+  const bgMusic = play("arcade", {
+    loop:true,
+    volume:0.5
+  })
+  bgMusic.play();
   const dialogs = [
     ["avatar", "Hi! I'm the Fix It Dude"],
     [
       "mayor",
-      "Hi! I'm Mayonnaise the Mayor, fix my city ! -panik- ",
+      "Hi! I'm Mayonnaise the Mayor, fix my city ! -panik-",
     ],
     [
       "worker",
@@ -39,9 +44,11 @@ const startConver = () => {
     color(233, 196, 106),
   ]);
   onKeyPress("space", async () => {
+    play("click");
     currentDialog = (currentDialog + 1) % dialogs.length;
     updateDialog();
    if (currentDialog == dialogs.length - 1) {
+      bgMusic.pause();
       go("startButton");
     }
 
